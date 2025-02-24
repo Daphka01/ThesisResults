@@ -1,0 +1,142 @@
+---
+title: "Daphka Thesis Results"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+<h1> Litterbag Data
+
+```{r}
+read.csv("C:/Users/daphk/OneDrive/Documents/Litterbag_Expt.csv")
+```
+
+
+
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r}
+litter.decomp <- read.csv("C:/Users/daphk/OneDrive/Documents/Litterbag_Expt.csv")
+```
+
+
+<h2> Changing Character to Factor
+
+```{r}
+litter.decomp$source_plot <- as.factor(litter.decomp$source_plot)
+litter.decomp$buried_plot <- as.factor(litter.decomp$buried_plot)
+litter.decomp$mesh_size_Âµm <- as.factor(litter.decomp$mesh_size_Âµm)
+```
+
+
+
+```{r}
+str(litter.decomp)
+```
+
+
+```{r}
+litter.decomp$mass_loss_percent
+```
+
+
+
+```{r}
+attach(litter.decomp)
+```
+
+<h2> Library Installation 
+
+```{r}
+library("dplyr")
+library(ggridges)
+library(ggplot2)
+library(viridis)
+library(devtools)
+library(ggbiplot)
+#install.packages("vioplot")
+library(vioplot)
+```
+
+
+<h1> Graphing Grass Litterbag Data
+
+```{r}
+litter.grass <- dplyr::filter(litter.decomp, plant_spp == "grass")
+```
+
+
+```{r}
+litter.grass
+```
+
+
+
+```{r}
+
+plot1 <- ggplot(litter.grass, aes(x=source_plot, y=mass_loss_percent)) + 
+    geom_boxplot(aes(color=buried_plot), outliers = F) +
+    geom_point(aes(color=buried_plot, fill = buried_plot, x=source_plot, y=mass_loss_percent), position = position_jitterdodge())+
+    facet_wrap(~mesh_size_Âµm)+
+    labs(x = "Source plot", y = "Mass Percent Loss")+
+    theme_minimal()+
+    theme(
+      panel.background = element_rect(fill = "white"), 
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank()
+    )
+plot1
+```
+
+
+<h1> Graphing Shrub Litterbag Data
+
+
+```{r}
+litter.shrub <- dplyr::filter(litter.decomp, plant_spp == "shrub")
+```
+
+
+```{r}
+litter.shrub
+```
+
+
+```{r}
+
+plot2 <- ggplot(litter.shrub, aes(x=source_plot, y=mass_loss_percent)) + 
+    geom_boxplot(aes(color=buried_plot), outliers = F) +
+    geom_point(aes(color=buried_plot, fill = buried_plot, x=source_plot, y=mass_loss_percent), position = position_jitterdodge())+
+    facet_wrap(~mesh_size_Âµm)+
+    labs(x = "Source plot", y = "Mass Percent Loss")+
+    theme_minimal()+
+    theme(
+      panel.background = element_rect(fill = "white"), 
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank()
+    )
+plot2
+
+```
+
+
+<h1> ANOVA Analysis 
+
+```{r}
+litter.decomp_aov1 <- aov(mass_loss_percent~(source_plot*buried_plot*mesh_size_Âµm), litter.shrub) 
+summary(litter.decomp_aov1)
+```
+
+
+
+```{r}
+litter.decomp_aov2 <- aov(mass_loss_percent~(source_plot*buried_plot*mesh_size_Âµm), litter.grass) 
+summary(litter.decomp_aov2)
+```
+
+
